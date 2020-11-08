@@ -1,0 +1,31 @@
+﻿<Window x:Class="UPSCustomerData.Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UPSCustomerData"
+        mc:Ignorable="d"
+        Title="Window1" Height="335.749" Width="446.69">
+    <Grid Margin="0,0,15,4">
+        <TextBox x:Name="txtName" HorizontalAlignment="Left" Height="25" Margin="85,111,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="320"/>
+        <TextBox x:Name="txtEmail" HorizontalAlignment="Left" Height="25" Margin="85,153,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="320"/>
+        <Button x:Name="Add_User" Content="Add User" HorizontalAlignment="Left" Height="36" Margin="287,235,0,0" VerticalAlignment="Top" Width="118" FontSize="15" Click="Add_User_Click"/>
+        <Label Content="Name" HorizontalAlignment="Left" Height="25" Margin="26,111,0,0" VerticalAlignment="Top" Width="79"/>
+        <Label Content="Email" HorizontalAlignment="Left" Height="25" Margin="26,153,0,0" VerticalAlignment="Top" Width="79"/>
+        <Label Content="Gender" HorizontalAlignment="Left" Height="25" Margin="26,202,0,0" VerticalAlignment="Top" Width="79"/>
+        <Label Content="Status" HorizontalAlignment="Left" Height="25" Margin="26,248,0,0" VerticalAlignment="Top" Width="79"/>
+        <ComboBox x:Name="cmbGender" HorizontalAlignment="Left" Height="25" Margin="85,202,0,0" VerticalAlignment="Top" Width="144">
+            <ComboBoxItem>Male</ComboBoxItem>
+            <ComboBoxItem IsSelected="True">Female</ComboBoxItem>
+        </ComboBox>
+
+        <ComboBox x:Name="cmbStatus" HorizontalAlignment="Left" Height="25" Margin="85,248,0,0" VerticalAlignment="Top" Width="144">
+            <ComboBoxItem>InActive</ComboBoxItem>
+            <ComboBoxItem IsSelected="True">Active</ComboBoxItem>
+        </ComboBox>
+        <Label x:Name="txtLabel" Content="Label" HorizontalAlignment="Left" Height="44" Margin="80,10,0,0" VerticalAlignment="Top" Width="319" FontSize="16"/>
+        <Label Content="Select" HorizontalAlignment="Left" Height="25" Margin="26,72,0,0" VerticalAlignment="Top" Width="79"/>
+        <ListBox x:Name="lstUsers" HorizontalAlignment="Left" Height="15" Margin="85,81,0,0" VerticalAlignment="Top" Width="319"/>
+
+    </Grid>
+</Window>
