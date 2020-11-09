@@ -32,7 +32,6 @@ using System.IO;
 using Microsoft.Win32;
 using System.Data;
 using System.Collections;
-using CsvHelper;
 using Microsoft.Office.Core;
 using UPSCustomerData.DataModels;
 using System.Configuration;
@@ -229,33 +228,46 @@ namespace UPSCustomerData
 
         }
 
-        private async void Edit_Click(object sender, RoutedEventArgs e)
+
+
+        private void Edit_Click(object sender, RoutedEventArgs e)
 
         {
-
-            int id;
-            if (grdEmployee.SelectedItems.Count > 0)
+            using (var client = new HttpClient())
             {
-                Datum datum = new Datum();
-                foreach (var obj in grdEmployee.SelectedItems)
+                int id;
+                if (grdEmployee.SelectedItems.Count > 0)
                 {
-                    datum = obj as Datum;
-                    id = datum.id;
-                    txtSearchID.Text = Convert.ToInt32(id).ToString();
-                    string name = datum.name;
-                    string email = datum.email;
-                    string gender = datum.gender.ToString();
-                    string status = datum.status;
+                    Datum datum = new Datum();
+                    foreach (var obj in grdEmployee.SelectedItems)
+                    {
+                        var grdata = obj as Datum;
+                        id = grdata.id;
+                        txtSearchID.Text = Convert.ToInt32(id).ToString();
+                        string name = grdata.name;
+                        string email = grdata.email;
+                        string gender = grdata.gender.ToString();
+                        string status = grdata.status;
 
-                    var response = await RestAPIFunctions.Post(name, email, gender, status);
-                    JToken parseJson = JToken.Parse(response);
+                        //var response = await RestAPIFunctions.Post(name, email, gender, status);
+                        //JToken parseJson = JToken.Parse(response);
+                        client.BaseAddress = new Uri(baseUrl);
+                        var response = client.PutAsJsonAsync("public-api/users/" + id, datum).Result;
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            MessageBox.Show("Success");
+                        }
+                        else
+                            MessageBox.Show("Error");
+
+                    }
+
                 }
-            }
-            
-            //txtSearchID.Text = "Enter Search Criteria";
-            //Refresh the table!
-            BindEmployeeList();
 
+                BindEmployeeList();
+
+            }
         }
 
 

@@ -9,7 +9,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using Microsoft.Windows.Shell;
 using System;
 using System.Diagnostics;
 using System.Windows;
@@ -31,12 +30,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Shell;
 using UPSCustomerData;
-using Xceed.Wpf.AvalonDock;
-using Xceed.Wpf.AvalonDock.Controls;
-using Xceed.Wpf.AvalonDock.Converters;
-using Xceed.Wpf.AvalonDock.Layout;
-using Xceed.Wpf.AvalonDock.Properties;
-using Xceed.Wpf.AvalonDock.Themes;
 
 
 namespace UPSCustomerData {

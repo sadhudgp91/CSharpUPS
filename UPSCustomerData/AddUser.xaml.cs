@@ -24,7 +24,6 @@ namespace UPSCustomerData
         public Window1()
         {
             InitializeComponent();
-            txtLabel.Content = "User Management";
             
         }
 

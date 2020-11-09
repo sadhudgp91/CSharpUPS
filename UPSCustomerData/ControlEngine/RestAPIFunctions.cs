@@ -15,10 +15,10 @@ using static UPSCustomerData.MainWindow;
 using System.Configuration;
 
 namespace UPSCustomerData.ControlEngine
-{   
+{
     // Author: Kaushik Sadhu
     // REST Functions
-    
+
     public static class RestAPIFunctions
 
     {
@@ -39,7 +39,7 @@ namespace UPSCustomerData.ControlEngine
                             var json_daily_forecast = await response.Content.ReadAsStringAsync();
                             var myObject = Newtonsoft.Json.JsonConvert.DeserializeObject<Jsonobjects>(json_daily_forecast);
                             string jsonData = JsonConvert.SerializeObject(json_daily_forecast, Formatting.None);
-                           
+
                         }
                         catch (Exception ex)
                         {
@@ -47,10 +47,10 @@ namespace UPSCustomerData.ControlEngine
                         }
                         finally
                         {
-                            
+
                             //CleanUp();
                         }
-                      
+
                     }
 
                     using (HttpContent content = response.Content)
@@ -80,8 +80,8 @@ namespace UPSCustomerData.ControlEngine
 
             using (HttpClient client = new HttpClient())
             {
-                client.DefaultRequestHeaders.Add("Authorization", "Bearer "+ APIKey);
-                
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + APIKey);
+
                 using (HttpResponseMessage response = await client.GetAsync(uriToSearch))
                 {
 
@@ -140,7 +140,6 @@ namespace UPSCustomerData.ControlEngine
         public static async Task<string> Post(string name, string email, string gender, string status)
 
         {
-            
             var inputText = new Dictionary<string, string>
             {
                 {"name", name },
