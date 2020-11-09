@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:UPSCustomerData"
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock" x:Class="UPSCustomerData.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="479.859" Width="1045.027"  Loaded="Window_Loaded">
-    <Grid>
+        Title="UPS-Employee Management Portal" Height="510.282" Width="933.015" Loaded="Window_Loaded" Icon="Ups.ico" WindowStartupLocation='CenterScreen'>
+    <Grid Margin="0,0,18,-2">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -16,28 +16,68 @@
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="881*"/>
+            <ColumnDefinition Width="555*"/>
+            <ColumnDefinition Width="350*"/>
         </Grid.ColumnDefinitions>
-        <DataGrid x:Name="grdEmployee" Height="246" Margin="146,107,40,0" VerticalAlignment="Top" Grid.Column="1" ItemsSource="{Binding EmployeeData}" >
 
-        <DataGrid.Resources>
+
+
+        <DataGrid x:Name="grdEmployee" Height="303" Margin="143,105,0,0" VerticalAlignment="Top" Grid.Column="1" ItemsSource="{Binding UPSCustomerDetails}"  SelectedItem="{Binding SelectedDataItem,Mode=TwoWay}"  Grid.ColumnSpan="2">
+
+            <DataGrid.Resources>
                 <Style TargetType="{x:Type DataGridColumnHeader}">
-                    <Setter Property="Background" Value="LightBlue">
-                        
-                    </Setter>
+
                 </Style>
-        
-        </DataGrid.Resources>
-            
-         <DataGrid.ContextMenu>
-            <xcad:ContextMenuEx/>
+
+                <Style TargetType="{x:Type DataGridCell}">
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="Green"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.Resources>
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding Id}" Header="Id" Width="100" Visibility="Hidden"/>
+            </DataGrid.Columns>
+
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+
+                    <MenuItem Header="Edit" Click="Edit_Click">
+
+                        <MenuItem.Icon>
+
+                            <Image Name="Edit" Source="edit.png" Height="20" Width="20"></Image>
+
+                        </MenuItem.Icon>
+
+                    </MenuItem>
+
+                    <MenuItem Header="Delete" Click="Delete_Click">
+
+                        <MenuItem.Icon>
+
+                            <Image Name="Delete" Source="delete.png" Height="20" Width="20"></Image>
+
+                        </MenuItem.Icon>
+
+                    </MenuItem>
+
+                </ContextMenu>
             </DataGrid.ContextMenu>
+
+
+
         </DataGrid>
 
-        <Grid Margin="146,107,10,10" Grid.Column="1">
+        <Grid Margin="146,107,92,21" Grid.Column="1" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="822*"/>
-                <ColumnDefinition Width="65*"/>
+                <ColumnDefinition Width="121*"/>
+                <ColumnDefinition Width="278*"/>
+                <ColumnDefinition Width="0*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -45,22 +85,29 @@
             </Grid.RowDefinitions>
 
 
-            <Button Content="Refresh" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="781,301,0,0" x:Name="btnShowAll" Click="btnShowAll_Click" RenderTransformOrigin="-0.913,0.394" Height="20" Background="#FF91D2FF" Grid.ColumnSpan="2" />
+            <Button Content="Refresh" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="16,315,-91,0" x:Name="btnShowAll" Click="btnShowAll_Click" RenderTransformOrigin="-0.913,0.394" Height="28" Background="#FF91D2FF" Grid.Column="2" />
 
-            <Button Content="Delete" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="161,301,0,0" x:Name="btnDelete" Click="btnDelete_Click" Height="20" Background="#FFEE673F" RenderTransformOrigin="0.476,-0.616" />
+            <Button Content="Delete" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="161,301,0,0" x:Name="btnDelete" Click="btnDelete_Click" Height="20" Background="#FFEE673F" RenderTransformOrigin="0.476,-0.616" Visibility="Hidden"/>
 
-            <Button Content="Add New User" HorizontalAlignment="Left" VerticalAlignment="Top" Width="89" x:Name="btnAdd" Click="btnAdd_Click" Margin="-121,214,0,0" Height="31" RenderTransformOrigin="3.165,-0.127" Background="#FF84DAAF"/>
-            <Button Content="Search" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="781,-34,0,0" x:Name="btnSearch" Click="btnSearch_Click" RenderTransformOrigin="-0.913,0.394" Height="29" Background="#FFBAE66D" Grid.ColumnSpan="2" />
-            <Button Content="Export CSV" HorizontalAlignment="Left" VerticalAlignment="Top" Width="89" x:Name="btnExport"  Margin="-121,159,0,0" Height="31" RenderTransformOrigin="3.165,-0.127" Background="#FFDAD684" Click="btnExport_Click"/>
+            <Button Content="Add New User" HorizontalAlignment="Left" VerticalAlignment="Top" Width="89" x:Name="btnAdd" Click="btnAdd_Click" Margin="-121,270,0,0" Height="31" RenderTransformOrigin="3.165,-0.127" Background="#FF84DAAF"/>
+            <Button Content="Search" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="95,-36,0,0" x:Name="btnSearch" Click="btnSearch_Click" RenderTransformOrigin="-0.913,0.394" Height="29" Background="#FFBAE66D" Grid.Column="1" Visibility="Hidden"/>
+            <Button Content="Export CSV" HorizontalAlignment="Left" VerticalAlignment="Top" Width="89" x:Name="btnExport"  Margin="-121,184,0,0" Height="31" RenderTransformOrigin="3.165,-0.127" Background="#FFDAD684" Click="btnExport_Click"/>
+            <Button Content="&lt;&lt; Prev" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="242,-36,0,0" x:Name="btnPrev" Click="btnPrev_Click" RenderTransformOrigin="-0.913,0.394" Height="29" Background="#FF989BA8" Grid.Column="1" />
 
 
-    </Grid>
-        <TextBox HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Width="140" Margin="143,408,0,0" x:Name="txtSearchID" Grid.Column="1" Height="19" Background="#FFF2F7E7" AutomationProperties.HelpText="Enter ID to delete"  />
-        <Label x:Name="txtLabel" Content="Label" Grid.Column="1" HorizontalAlignment="Left" Height="33" Margin="143,21,0,0" VerticalAlignment="Top" Width="298" FontSize="16" FontWeight="Bold" Background="White"/>
+        </Grid>
+
+        <TextBox HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Width="34" Margin="143,408,0,0" x:Name="txtSearchID" Grid.Column="1" Height="19" Background="#FFF2F7E7" AutomationProperties.HelpText="Enter ID to delete" Visibility="Hidden" />
+        <Label x:Name="txtLabel" Content="Label" Grid.Column="1" HorizontalAlignment="Left" Height="33" Margin="176,21,0,0" VerticalAlignment="Top" Width="298" FontSize="16" FontWeight="Bold" Background="White"/>
         <Image Grid.Column="1" HorizontalAlignment="Left" Height="74" Margin="27,43,0,0" VerticalAlignment="Top" Width="76"/>
-        <Image Grid.Column="1" Margin="27,20,923,331" Source="avatar.png" Stretch="Fill" RenderTransformOrigin="-10.812,-5.637"/>
-        <Label x:Name="txtLabelUser" Content="Label" Grid.Column="1" HorizontalAlignment="Left" Height="88" Margin="27,136,0,0" VerticalAlignment="Top" Width="93" FontSize="14"/>
-        <TextBox x:Name="txtUnivSearch" Grid.Column="1" HorizontalAlignment="Left" Height="28" Margin="146,74,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="764"/>
+        <Label x:Name="txtLabelUser" Grid.Column="1" HorizontalAlignment="Left" Height="88" Margin="27,136,0,0" VerticalAlignment="Top" Width="93" FontSize="14"/>
+        <TextBox x:Name="txtUnivSearch" Grid.Column="1" HorizontalAlignment="Left" Height="26" Margin="275,70,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="230" TextChanged="txtUnivSearch_TextChanged"/>
+        <Image Margin="10,21,440,350" Source="avatar.png" Stretch="Fill" Grid.Column="1" RenderTransformOrigin="0.432,0.218"/>
+        <Image Grid.Column="1" Margin="141,25,387,427" Source="Ups.ico" Stretch="Fill"/>
+        <Button Content="Next &gt;&gt;" HorizontalAlignment="Left" VerticalAlignment="Top" Width="77" Margin="269,71,0,0" x:Name="btnNext" Click="btnNext_Click" RenderTransformOrigin="-0.913,0.394" Height="29" Background="#FF8F8F8F" Grid.Column="2" />
+        <ComboBox x:Name='NumberOfRecords' SelectedIndex='0' SelectionChanged='NumberOfRecords_SelectionChanged' Grid.Column="2" HorizontalAlignment="Left" Height="29" Margin="163,70,0,0" VerticalAlignment="Top" Width="59"/>
+        <Label Content="Right click to delete an user from the DataTable." Grid.Column="1" HorizontalAlignment="Left" Height="29" Margin="143,422,0,0" VerticalAlignment="Top" Width="362" Background="White" Foreground="Red" FontWeight="Bold"/>
+        <Label Content="Search using Name" Grid.Column="1" HorizontalAlignment="Left" Height="29" Margin="141,70,0,0" VerticalAlignment="Top" Width="129"/>
 
     </Grid>
 </Window>

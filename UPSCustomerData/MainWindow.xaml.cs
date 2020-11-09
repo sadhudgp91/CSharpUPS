@@ -34,6 +34,8 @@ using System.Data;
 using System.Collections;
 using CsvHelper;
 using Microsoft.Office.Core;
+using UPSCustomerData.DataModels;
+
 
 namespace UPSCustomerData
 {
@@ -42,12 +44,48 @@ namespace UPSCustomerData
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        private int nRecordsPerPage;
+        private static int pageNumber;
+        static Paging PagedTable = new Paging();
+
+        static EmployeeRecords employeeRecord = new EmployeeRecords();
+
+        private ICollectionView defaultView;
+
         public MainWindow()
         {
             InitializeComponent();
             txtLabel.Content = "UPS Employee Details";
             txtLabelUser.Content = "Welcome " +  "\n" + Environment.UserName;
-         
+            this.DataContext = this;
+
+            int[] RecordsToShow = { 10, 20, 30, 50, 100 }; //This Array can be any number groups
+
+            foreach (int RecordGroup in RecordsToShow)
+            {
+                NumberOfRecords.Items.Add(RecordGroup); //Fill the ComboBox with the Array
+            }
+
+            NumberOfRecords.SelectedItem = 20; //Initialize the ComboBox
+
+            nRecordsPerPage = Convert.ToInt32(NumberOfRecords.SelectedItem); //Convert the Combox Output to type int
+
+            //System.Data.DataTable firstTable = PagedTable.SetPaging(myList, nRecordsPerPage); //Fill a DataTable with the First set based on the numberOfRecPerPage
+
+            //grdEmployee.ItemsSource = firstTable.DefaultView; //Fill the dataGrid with the DataTable created previously
+            btnPrev.IsEnabled = false;
+
+
+           
+
+
+            //grdEmployee.ItemsSource = firstTable.DefaultView; //Fill the dataGrid with the DataTable created previously
+
+            txtUnivSearch.Text = "";
+
+
+
 
         }
 
@@ -118,10 +156,115 @@ namespace UPSCustomerData
             txtSearchID.Text = "Enter Search Criteria";
             //Refresh the table!
             BindEmployeeList();
+        }
 
+
+
+        //private void grdEmployee_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    string id  = grdEmployee.SelectedItem.ToString();
+        //}       
+
+        public IEnumerable<DataGridRow> GetDataGridRows(DataGrid grid)
+        {
+            var itemsSource = grid.ItemsSource as IEnumerable;
+            if (null == itemsSource) yield return null;
+            foreach (var item in itemsSource)
+            {
+                var row = grid.ItemContainerGenerator.ContainerFromItem(item) as DataGridRow;
+                if (null != row) yield return row;
+            }
+        }
+
+
+        //private void datagrid_selected(object sender, SelectedCellsChangedEventArgs e)
+        //{
+        //    int id;
+        //    if (grdEmployee.SelectedItems.Count > 0)
+        //    {
+        //        Datum datum = new Datum();
+        //        foreach (var obj in grdEmployee.SelectedItems)
+        //        {
+        //            datum = obj as Datum;
+        //            id = datum.id;
+        //            txtSearchID.Text = Convert.ToInt32(id).ToString();                   
+        //        }
+        //    }
+        //    else
+        //    {
+        //        //
+        //    }
+                    
+                       
+
+        //}
+
+        private async void Delete_Click(object sender, RoutedEventArgs e)
+
+        {
+            int id;
+            if (grdEmployee.SelectedItems.Count > 0)
+            {
+                         
+                Datum datum = new Datum();
+                foreach (var obj in grdEmployee.SelectedItems)
+                {
+                    datum = obj as Datum;
+                    id = datum.id;
+                    txtSearchID.Text = Convert.ToInt32(id).ToString();
+                }
+            }
+
+
+            var response = await DeleteUser(txtSearchID.Text);
+            JToken parseJson = JToken.Parse(response);
+            var newJson = parseJson.ToString(Formatting.Indented);
+            //Refresh the table!
+            BindEmployeeList();
+            if (newJson != null)
+            {
+                MessageBox.Show("User Deleted Successfully!");
+            }
+            txtSearchID.Text = "";
+            
             
 
         }
+
+        private async void Edit_Click(object sender, RoutedEventArgs e)
+
+        {
+
+            int id;
+            if (grdEmployee.SelectedItems.Count > 0)
+            {
+                Datum datum = new Datum();
+                foreach (var obj in grdEmployee.SelectedItems)
+                {
+                    datum = obj as Datum;
+                    id = datum.id;
+                    txtSearchID.Text = Convert.ToInt32(id).ToString();
+                    string name = datum.name;
+                    string email = datum.email;
+                    string gender = datum.gender.ToString();
+                    string status = datum.status;
+
+                    var response = await RestAPIFunctions.Post(name, email, gender, status);
+                    JToken parseJson = JToken.Parse(response);
+                }
+            }
+
+
+            
+           
+            txtSearchID.Text = "Enter Search Criteria";
+            //Refresh the table!
+            BindEmployeeList();
+
+        }
+
+
+
 
         private async Task<string> DeleteUser(string id)
         {
@@ -136,8 +279,8 @@ namespace UPSCustomerData
                 {
                     if (response.IsSuccessStatusCode)
                     {
-                        MessageBox.Show("User deleted successfully!");
-                        
+                        //MessageBox.Show("User Deleted Successfully!");
+
                     }
                     else
                     {
@@ -149,6 +292,7 @@ namespace UPSCustomerData
                         string data = await content.ReadAsStringAsync();
                         if(data!=null)
                         {
+                            
                             return data;
 
                         }
@@ -164,35 +308,44 @@ namespace UPSCustomerData
         }
 
 
-       
 
-
-
-        private async void btnSearch_Click(object sender, RoutedEventArgs e)
-        {
-            var response = await RestAPIFunctions.SearchUser(txtUnivSearch.Text);
-            //var json_daily_forecast = await response.Content.ReadAsStringAsync();
-
-
-            //string jsonData = JsonConvert.SerializeObject(response, Formatting.None);
-
-            //grdEmployee.ItemsSource = jsonData.data;
-
-        
-            //var newJson = parseJson.ToString(Formatting.Indented);
-
-            //var json = "[" + newJson + "]";
-
-            //Datum[] items = JsonConvert.DeserializeObject<Datum[]>(json);
-
-        
-            //var people = JsonConvert.DeserializeObject<List<Person>>(json);
-
-            grdEmployee.ItemsSource = RestAPIFunctions.BeautifyJson(response);
-
+        private void NumberOfRecords_SelectionChanged(object sender, SelectionChangedEventArgs e)  //I couldn't get this function to update in place (if the grid showed 20 and I selected 100 it would jump to 200)
+        {                                                                                          //So instead I had it call the First function and that does an acceptable job.
+            //nRecordsPerPage = Convert.ToInt32(NumberOfRecords.SelectedItem);
+            //var res = await RestAPIFunctions.GoToPage(nRecordsPerPage.ToString());
+            //grdEmployee.ItemsSource = RestAPIFunctions.BeautifyJson(res);
 
         }
 
+
+        private void btnNext_Click(object sender, RoutedEventArgs e)    //For each of these you call the direction you want and pass in the List and ComboBox output
+        {                                                               //and use the above function to output the Record number to the Label
+
+            pageNumber++;
+
+            IList<EmployeeRecords.Student> myList = employeeRecord.GetRecord(pageNumber);
+
+            System.Data.DataTable firstTable = PagedTable.SetPaging(myList, nRecordsPerPage); //Fill a DataTable with the First set based on the numberOfRecPerPage
+
+            grdEmployee.ItemsSource = firstTable.DefaultView;
+
+            btnPrev.IsEnabled = true;
+            SortDataGrid(grdEmployee);
+
+        }
+
+        private void btnPrev_Click(object sender, RoutedEventArgs e)
+        {
+            pageNumber--;
+
+            IList<EmployeeRecords.Student> myList = employeeRecord.GetRecord(pageNumber);
+
+            System.Data.DataTable firstTable = PagedTable.SetPaging(myList, nRecordsPerPage); //Fill a DataTable with the First set based on the numberOfRecPerPage
+
+            grdEmployee.ItemsSource = firstTable.DefaultView;
+
+            SortDataGrid(grdEmployee);
+        }
 
         public class Person
         {
@@ -243,11 +396,13 @@ namespace UPSCustomerData
         private void btnShowAll_Click(object sender, RoutedEventArgs e)
         {
             BindEmployeeList();
+            SortDataGrid(grdEmployee);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             BindEmployeeList();
+            SortDataGrid(grdEmployee);
         }
 
         private void CreateDynamicStatusBar()
@@ -399,7 +554,9 @@ namespace UPSCustomerData
     }
 
 
-    public class Pagination
+    
+
+        public class Pagination
     {
         public int total { get; set; }
         public int pages { get; set; }
@@ -421,6 +578,7 @@ namespace UPSCustomerData
         public string status { get; set; }
         public DateTime created_at { get; set; }
         public DateTime updated_at { get; set; }
+        //public Person SelectedPerson { get; set; }
 
     }
     public enum Gender
@@ -435,6 +593,8 @@ namespace UPSCustomerData
         InActve
     };
 
+
+    
     public class Rootobject
     {
         public int code { get; set; }
@@ -461,7 +621,7 @@ namespace UPSCustomerData
     {
 
         [JsonProperty("id")]
-        public string id { get; set; }
+        public int id { get; set; }
 
         [JsonProperty("name")]
         public string name { get; set; }
@@ -473,7 +633,7 @@ namespace UPSCustomerData
         public Gender gender { get; set; }
        
         [JsonProperty("status")]
-        public Status status { get; set; }
+        public string status { get; set; }
 
         [JsonProperty("created_at")]
         public string created_at { get; set; }
@@ -484,7 +644,46 @@ namespace UPSCustomerData
         //public List<UPSCustomerDetails> userdetails { get; set; }
 
         //public static IList<UPSCustomerDetails> products = new List<UPSCustomerDetails>();
-    }
+        }
+
+        private void btnSearch_Click(object sender, RoutedEventArgs e)
+
+        {
+
+            IList<EmployeeRecords.Student> myList2 = employeeRecord.SearUserRecord(txtUnivSearch.Text);
+
+            //var response = await RestAPIFunctions.SearchUser(txtUnivSearch.Text);
+            System.Data.DataTable firstTable = PagedTable.SetPaging(myList2, nRecordsPerPage); //Fill a DataTable with the First set based on the numberOfRecPerPage
+            this.defaultView = CollectionViewSource.GetDefaultView(firstTable);
+
+            this.defaultView.Filter =
+                w => ((string)w).Contains(txtUnivSearch.Text);
+
+            grdEmployee.ItemsSource = this.defaultView;
+
+            this.defaultView.Refresh();
+
+           
+        }
+
+        private void txtUnivSearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox searchEntry = (TextBox)sender;
+            string filter = searchEntry.Text;
+            ICollectionView employeeCollection = CollectionViewSource.GetDefaultView(grdEmployee.ItemsSource);
+            if (filter == "")
+                employeeCollection.Filter = null;
+            else
+            {
+                employeeCollection.Filter = o =>
+                {
+                    Datum p = o as Datum;
+                    if (searchEntry.Name == "txtId")
+                        return (p.id == Convert.ToInt32(filter));
+                    return (p.name.ToUpper().StartsWith(filter.ToUpper()));
+                };
+            }
+        }
     }
 
 }

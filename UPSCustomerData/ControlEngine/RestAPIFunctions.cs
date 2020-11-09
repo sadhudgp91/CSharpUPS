@@ -98,6 +98,39 @@ namespace UPSCustomerData.ControlEngine
         }
 
 
+
+        public static async Task<string> GoToPage(string id)
+        {
+            var BaseAddress = new Uri("https://gorest.co.in/");
+            var url = "public-api/users?page=" + id;
+            string uriToSearch = BaseAddress + url;
+
+            using (HttpClient client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer fa114107311259f5f33e70a5d85de34a2499b4401da069af0b1d835cd5ec0d56");
+
+                using (HttpResponseMessage response = await client.GetAsync(uriToSearch))
+                {
+
+                    using (HttpContent content = response.Content)
+                    {
+                        string data = await content.ReadAsStringAsync();
+                        if (data != null)
+                        {
+                            return data;
+
+                        }
+                    }
+
+                }
+
+            }
+
+            return string.Empty;
+
+        }
+
+
         public static async Task<string> Post(string name, string email, string gender, string status)
 
         {
@@ -148,6 +181,9 @@ namespace UPSCustomerData.ControlEngine
             JToken parseJson = JToken.Parse(jsonStr);
             return parseJson.ToString(Formatting.Indented);
         }
+
+
+
 
     }
 }
