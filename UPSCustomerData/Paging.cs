@@ -21,7 +21,7 @@ namespace UPSCustomerData
         /// <param name="ListToPage"></param>
         /// <param name="RecordsPerPage"></param>
         /// <returns>DataTable</returns>
-        public DataTable Next(IList<EmployeeRecords.Student> ListToPage, int RecordsPerPage)
+        public DataTable Next(IList<EmployeeRecords.UPSEmployee> ListToPage, int RecordsPerPage)
         {
             PageIndex++;
             if (PageIndex >= ListToPage.Count / RecordsPerPage)
@@ -38,7 +38,7 @@ namespace UPSCustomerData
         /// <param name="ListToPage"></param>
         /// <param name="RecordsPerPage"></param>
         /// <returns>DataTable</returns>
-        public DataTable Previous(IList<EmployeeRecords.Student> ListToPage, int RecordsPerPage)
+        public DataTable Previous(IList<EmployeeRecords.UPSEmployee> ListToPage, int RecordsPerPage)
         {
             PageIndex--;
             if (PageIndex <= 0)
@@ -55,7 +55,7 @@ namespace UPSCustomerData
         /// <param name="ListToPage"></param>
         /// <param name="RecordsPerPage"></param>
         /// <returns>DataTable</returns>
-        public DataTable First(IList<EmployeeRecords.Student> ListToPage, int RecordsPerPage)
+        public DataTable First(IList<EmployeeRecords.UPSEmployee> ListToPage, int RecordsPerPage)
         {
             PageIndex = 0;
             PagedList = SetPaging(ListToPage, RecordsPerPage);
@@ -68,7 +68,7 @@ namespace UPSCustomerData
         /// <param name="ListToPage"></param>
         /// <param name="RecordsPerPage"></param>
         /// <returns>DataTable</returns>
-        public DataTable Last(IList<EmployeeRecords.Student> ListToPage, int RecordsPerPage)
+        public DataTable Last(IList<EmployeeRecords.UPSEmployee> ListToPage, int RecordsPerPage)
         {
             PageIndex = ListToPage.Count / RecordsPerPage;
             PagedList = SetPaging(ListToPage, RecordsPerPage);
@@ -81,11 +81,11 @@ namespace UPSCustomerData
         /// <param name="ListToPage"></param>
         /// <param name="RecordsPerPage"></param>
         /// <returns>DataTable</returns>
-		public DataTable SetPaging(IList<EmployeeRecords.Student> ListToPage, int RecordsPerPage)
+		public DataTable SetPaging(IList<EmployeeRecords.UPSEmployee> ListToPage, int RecordsPerPage)
         {
             int PageGroup = PageIndex * RecordsPerPage;
 
-            IList<EmployeeRecords.Student> PagedList = new List<EmployeeRecords.Student>();
+            IList<EmployeeRecords.UPSEmployee> PagedList = new List<EmployeeRecords.UPSEmployee>();
 
             PagedList = ListToPage.Skip(PageGroup).Take(RecordsPerPage).ToList(); //This is where the Magic Happens. If you have a Specific sort or want to return ONLY a specific set of columns, add it to this LINQ Query.
 

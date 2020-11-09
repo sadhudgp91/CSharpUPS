@@ -25,7 +25,7 @@ namespace UPSCustomerData
         {
             InitializeComponent();
             txtLabel.Content = "User Management";
-
+            
         }
 
         private async void Add_User_Click(object sender, RoutedEventArgs e)
@@ -34,6 +34,8 @@ namespace UPSCustomerData
             //EmployeeData.ItemsSource = RestAPIFunctions.BeautifyJson(response);
             //Refresh the table!
             _ = RestAPIFunctions.GetAll();
+            MainWindow mainwindow = new MainWindow();
+            mainwindow.lblPageInfo.Content = mainwindow.PageNumberDisplay();
         }
 
     }

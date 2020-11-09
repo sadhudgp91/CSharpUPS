@@ -35,7 +35,7 @@ using System.Collections;
 using CsvHelper;
 using Microsoft.Office.Core;
 using UPSCustomerData.DataModels;
-
+using System.Configuration;
 
 namespace UPSCustomerData
 {
@@ -52,6 +52,9 @@ namespace UPSCustomerData
         static EmployeeRecords employeeRecord = new EmployeeRecords();
 
         private ICollectionView defaultView;
+        readonly string APIKey = ConfigurationManager.AppSettings["accessTokenAPIKey"];
+        readonly string baseUrl = "https://gorest.co.in/";
+
 
         public MainWindow()
         {
@@ -60,42 +63,37 @@ namespace UPSCustomerData
             txtLabelUser.Content = "Welcome " +  "\n" + Environment.UserName;
             this.DataContext = this;
 
-            int[] RecordsToShow = { 10, 20, 30, 50, 100 }; //This Array can be any number groups
+            int[] RecordsToShow = { 10, 20, 30, 50, 100 }; 
 
             foreach (int RecordGroup in RecordsToShow)
             {
-                NumberOfRecords.Items.Add(RecordGroup); //Fill the ComboBox with the Array
+                NumberOfRecords.Items.Add(RecordGroup); 
             }
 
-            NumberOfRecords.SelectedItem = 20; //Initialize the ComboBox
+            NumberOfRecords.SelectedItem = 20; 
 
-            nRecordsPerPage = Convert.ToInt32(NumberOfRecords.SelectedItem); //Convert the Combox Output to type int
+            nRecordsPerPage = Convert.ToInt32(NumberOfRecords.SelectedItem); 
 
-            //System.Data.DataTable firstTable = PagedTable.SetPaging(myList, nRecordsPerPage); //Fill a DataTable with the First set based on the numberOfRecPerPage
+            //System.Data.DataTable firstTable = PagedTable.SetPaging(myList, nRecordsPerPage);
 
-            //grdEmployee.ItemsSource = firstTable.DefaultView; //Fill the dataGrid with the DataTable created previously
+            //grdEmployee.ItemsSource = firstTable.DefaultView; 
             btnPrev.IsEnabled = false;
 
-
-           
-
-
-            //grdEmployee.ItemsSource = firstTable.DefaultView; //Fill the dataGrid with the DataTable created previously
+            //grdEmployee.ItemsSource = firstTable.DefaultView;
 
             txtUnivSearch.Text = "";
 
-
-
+            lblPageInfo.Content = PageNumberDisplay();
 
         }
 
         public async void BindEmployeeList()
         {
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri("https://gorest.co.in/");
+            client.BaseAddress = new Uri(baseUrl);
             //client.DefaultRequestHeaders.Add("appkey", "myapp_key");
 
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer fa114107311259f5f33e70a5d85de34a2499b4401da069af0b1d835cd5ec0d56");
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer "+ APIKey);
 
             // Add an Accept header for JSON format.
             client.DefaultRequestHeaders.Accept.Add(
@@ -264,17 +262,74 @@ namespace UPSCustomerData
         }
 
 
+        private void btnGoTo_Click(object sender, RoutedEventArgs e)
+        {
+            GoToPage(txtGoToPage.Text.ToString());
+            txtGoToPage.Text = "";
+        }
+
+
+        public async void GoToPage(string id)
+        {
+
+            var url = "public-api/users?page=" + id;
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(baseUrl);
+            //client.DefaultRequestHeaders.Add("appkey", "myapp_key");
+
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + APIKey);
+
+            // Add an Accept header for JSON format.
+            client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            HttpResponseMessage response = client.GetAsync(url).Result;
+
+
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json_daily_forecast = await response.Content.ReadAsStringAsync();
+
+                var myObject = Newtonsoft.Json.JsonConvert.DeserializeObject<Jsonobjects>(json_daily_forecast);
+
+                string jsonData = JsonConvert.SerializeObject(json_daily_forecast, Formatting.None);
+
+                grdEmployee.ItemsSource = myObject.data;
+
+                SortDataGrid(grdEmployee);
+            }
+            else
+            {
+                MessageBox.Show("Error Code" + response.StatusCode + " : Message - " + response.ReasonPhrase);
+            }
+
+        }
+
+        public string PageNumberDisplay()
+        {
+            
+            IList<EmployeeRecords.UPSEmployee> myList = employeeRecord.GetDataAll();
+            //System.Data.DataTable firstTable = PagedTable.SetPaging(myList, nRecordsPerPage);
+
+            int PagedNumber = nRecordsPerPage * (PagedTable.PageIndex + 1);
+            //if (PagedNumber > myList.Count)
+            //{
+            //    PagedNumber = myList.Count;
+            //}
+            return "Showing " + PagedNumber + " of " + myList[0].record + " records"; //This dramatically reduced the number of times I had to write this string statement
+        }
 
 
         private async Task<string> DeleteUser(string id)
         {
-            var BaseAddress = new Uri("https://gorest.co.in/");
+            var BaseAddress = new Uri(baseUrl);
             var url = "public-api/users/" + id;
             string uriToDelete = BaseAddress + url;
-
+            
             using (HttpClient client = new HttpClient())
             {
-                client.DefaultRequestHeaders.Add("Authorization", "Bearer fa114107311259f5f33e70a5d85de34a2499b4401da069af0b1d835cd5ec0d56");
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + APIKey);
                 using (HttpResponseMessage response = await client.DeleteAsync(uriToDelete))
                 {
                     if (response.IsSuccessStatusCode)
@@ -308,9 +363,10 @@ namespace UPSCustomerData
         }
 
 
+        // Navigation Code
 
-        private void NumberOfRecords_SelectionChanged(object sender, SelectionChangedEventArgs e)  //I couldn't get this function to update in place (if the grid showed 20 and I selected 100 it would jump to 200)
-        {                                                                                          //So instead I had it call the First function and that does an acceptable job.
+        private void NumberOfRecords_SelectionChanged(object sender, SelectionChangedEventArgs e)  
+        {                                                                                          
             //nRecordsPerPage = Convert.ToInt32(NumberOfRecords.SelectedItem);
             //var res = await RestAPIFunctions.GoToPage(nRecordsPerPage.ToString());
             //grdEmployee.ItemsSource = RestAPIFunctions.BeautifyJson(res);
@@ -318,19 +374,21 @@ namespace UPSCustomerData
         }
 
 
-        private void btnNext_Click(object sender, RoutedEventArgs e)    //For each of these you call the direction you want and pass in the List and ComboBox output
-        {                                                               //and use the above function to output the Record number to the Label
+        private void btnNext_Click(object sender, RoutedEventArgs e)   
+        {                                                              
 
             pageNumber++;
 
-            IList<EmployeeRecords.Student> myList = employeeRecord.GetRecord(pageNumber);
+            IList<EmployeeRecords.UPSEmployee> myList = employeeRecord.GetRecord(pageNumber);
 
-            System.Data.DataTable firstTable = PagedTable.SetPaging(myList, nRecordsPerPage); //Fill a DataTable with the First set based on the numberOfRecPerPage
+            System.Data.DataTable firstTable = PagedTable.SetPaging(myList, nRecordsPerPage); 
 
             grdEmployee.ItemsSource = firstTable.DefaultView;
 
             btnPrev.IsEnabled = true;
             SortDataGrid(grdEmployee);
+
+            lblPageInfo.Content = PageNumberDisplay();
 
         }
 
@@ -338,13 +396,14 @@ namespace UPSCustomerData
         {
             pageNumber--;
 
-            IList<EmployeeRecords.Student> myList = employeeRecord.GetRecord(pageNumber);
+            IList<EmployeeRecords.UPSEmployee> myList = employeeRecord.GetRecord(pageNumber);
 
-            System.Data.DataTable firstTable = PagedTable.SetPaging(myList, nRecordsPerPage); //Fill a DataTable with the First set based on the numberOfRecPerPage
+            System.Data.DataTable firstTable = PagedTable.SetPaging(myList, nRecordsPerPage); 
 
             grdEmployee.ItemsSource = firstTable.DefaultView;
 
             SortDataGrid(grdEmployee);
+            lblPageInfo.Content = PageNumberDisplay();
         }
 
         public class Person
@@ -354,37 +413,13 @@ namespace UPSCustomerData
         }
 
         private  void btnAdd_Click(object sender, RoutedEventArgs e)
-        {
+        {   
+            // Add user from AddUser Window
 
             var wpfWindow = new UPSCustomerData.Window1();
             //var wpfWindow = new WpfApplication1.MainWindow();
             wpfWindow.Show();
 
-            //HttpClient client = new HttpClient();
-            //client.BaseAddress = new Uri("https://gorest.co.in/");
-
-            //Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-            //var date1 = new DateTime(2008, 5, 1, 8, 30, 52);
-
-            //client.DefaultRequestHeaders.Accept.Add(
-            //   new MediaTypeWithQualityHeaderValue("application/json"));
-            //var employee = new Datum();
-
-            //employee.created_at = date1; 
-            //employee.updated_at = date1;
-
-            //var response = client.PostAsJsonAsync("public-api/users", employee).Result;
-
-            //if (response.IsSuccessStatusCode)
-            //{
-                
-               
-            //    BindEmployeeList();
-            //}
-            //else
-            //{
-            //    MessageBox.Show("Error Code" + response.StatusCode + " : Message - " + response.ReasonPhrase);
-            //}
         }
 
         private static int id = 1;
@@ -393,17 +428,24 @@ namespace UPSCustomerData
             return id++;
         }
 
+
+        // MainWindow Code
+
         private void btnShowAll_Click(object sender, RoutedEventArgs e)
         {
             BindEmployeeList();
             SortDataGrid(grdEmployee);
+            lblPageInfo.Content = PageNumberDisplay();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             BindEmployeeList();
             SortDataGrid(grdEmployee);
+            
         }
+
+
 
         private void CreateDynamicStatusBar()
         {
@@ -536,121 +578,12 @@ namespace UPSCustomerData
 
         }
 
-
-
-    // Data Models
-
-    public class Obj
-    {
-        public Obj(string key, string value)
-        {
-            Key = key;
-            Value = value;
-        }
-
-        public string Key { get; set; }
-
-        public string Value { get; set; }
-    }
-
-
-    
-
-        public class Pagination
-    {
-        public int total { get; set; }
-        public int pages { get; set; }
-        public int page { get; set; }
-        public int limit { get; set; }
-    }
-
-    public class Meta
-    {
-        public Pagination pagination { get; set; }
-    }
-
-    public class Datum
-    {
-        public int id { get; set; }
-        public string name { get; set; }
-        public string email { get; set; }
-        public Gender gender { get; set; }
-        public string status { get; set; }
-        public DateTime created_at { get; set; }
-        public DateTime updated_at { get; set; }
-        //public Person SelectedPerson { get; set; }
-
-    }
-    public enum Gender
-    {
-        Male,
-        Female
-    };
-
-    public enum Status
-    {
-        Active,
-        InActve
-    };
-
-
-    
-    public class Rootobject
-    {
-        public int code { get; set; }
-        public Meta meta { get; set; }
-
-        //public Datum[] data { get; set; }
-
-        public List<Datum> data { get; set; }
-    }
-
-
-    public class Jsonobjects
-    {
-        public int id { get; set; }
-        public Meta meta { get; set; }
-
-        public Datum[] data { get; set; }
-
-        //public List<UPSCustomerDetails> data { get; set; }
-    }
-
-
-    public class UPSCustomerDetails
-    {
-
-        [JsonProperty("id")]
-        public int id { get; set; }
-
-        [JsonProperty("name")]
-        public string name { get; set; }
-
-        [JsonProperty("email")]
-        public string email { get; set; }
-
-        [JsonProperty("gender")]
-        public Gender gender { get; set; }
-       
-        [JsonProperty("status")]
-        public string status { get; set; }
-
-        [JsonProperty("created_at")]
-        public string created_at { get; set; }
-
-        [JsonProperty("updated_at")]
-        public string updated_at { get; set; }
-
-        //public List<UPSCustomerDetails> userdetails { get; set; }
-
-        //public static IList<UPSCustomerDetails> products = new List<UPSCustomerDetails>();
-        }
-
+        
         private void btnSearch_Click(object sender, RoutedEventArgs e)
 
         {
 
-            IList<EmployeeRecords.Student> myList2 = employeeRecord.SearUserRecord(txtUnivSearch.Text);
+            IList<EmployeeRecords.UPSEmployee> myList2 = employeeRecord.SearUserRecord(txtUnivSearch.Text);
 
             //var response = await RestAPIFunctions.SearchUser(txtUnivSearch.Text);
             System.Data.DataTable firstTable = PagedTable.SetPaging(myList2, nRecordsPerPage); //Fill a DataTable with the First set based on the numberOfRecPerPage
@@ -684,6 +617,116 @@ namespace UPSCustomerData
                 };
             }
         }
+
+
+        // Reference to Data Models
+
+        public class Obj
+        {
+            public Obj(string key, string value)
+            {
+                Key = key;
+                Value = value;
+            }
+
+            public string Key { get; set; }
+
+            public string Value { get; set; }
+        }
+
+
+
+
+        public class Pagination
+        {
+            public int total { get; set; }
+            public int pages { get; set; }
+            public int page { get; set; }
+            public int limit { get; set; }
+        }
+
+        public class Meta
+        {
+            public Pagination pagination { get; set; }
+        }
+
+        public class Datum
+        {
+            public int id { get; set; }
+            public string name { get; set; }
+            public string email { get; set; }
+            public Gender gender { get; set; }
+            public string status { get; set; }
+            public DateTime created_at { get; set; }
+            public DateTime updated_at { get; set; }
+            //public Person SelectedPerson { get; set; }
+
+        }
+        public enum Gender
+        {
+            Male,
+            Female
+        };
+
+        public enum Status
+        {
+            Active,
+            InActve
+        };
+
+
+
+        public class Rootobject
+        {
+            public int code { get; set; }
+            public Meta meta { get; set; }
+
+            //public Datum[] data { get; set; }
+
+            public List<Datum> data { get; set; }
+        }
+
+
+        public class Jsonobjects
+        {
+            public int id { get; set; }
+            public Meta meta { get; set; }
+
+            public Datum[] data { get; set; }
+
+            //public List<UPSCustomerDetails> data { get; set; }
+        }
+
+
+        public class UPSCustomerDetails
+        {
+
+            [JsonProperty("id")]
+            public int id { get; set; }
+
+            [JsonProperty("name")]
+            public string name { get; set; }
+
+            [JsonProperty("email")]
+            public string email { get; set; }
+
+            [JsonProperty("gender")]
+            public Gender gender { get; set; }
+
+            [JsonProperty("status")]
+            public string status { get; set; }
+
+            [JsonProperty("created_at")]
+            public string created_at { get; set; }
+
+            [JsonProperty("updated_at")]
+            public string updated_at { get; set; }
+
+            //public List<UPSCustomerDetails> userdetails { get; set; }
+
+            //public static IList<UPSCustomerDetails> products = new List<UPSCustomerDetails>();
+        }
+
     }
 
 }

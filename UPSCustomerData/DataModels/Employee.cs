@@ -12,11 +12,14 @@ using System.Text;
 using System.Threading.Tasks;
 using static UPSCustomerData.MainWindow;
 using System.Web.Script.Serialization;
+using System.Configuration;
 
 namespace UPSCustomerData.DataModels
 {
 
     class EmployeeRecords {
+        readonly string APIKey = ConfigurationManager.AppSettings["accessTokenAPIKey"];
+        readonly string baseUrl = "https://gorest.co.in/";
 
         public class Obj
         {
@@ -53,35 +56,60 @@ namespace UPSCustomerData.DataModels
 
 
 
-        public virtual async Task<IList<Datum>> GetDataAll()
+        public IList<UPSEmployee> GetDataAll()
         {
-                       
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri("https://gorest.co.in/");
-            var url = "https://gorest.co.in/users";
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer fa114107311259f5f33e70a5d85de34a2499b4401da069af0b1d835cd5ec0d56");
-            IList<Datum> userdetails = new List<Datum>();
 
-            foreach (Datum employee in userdetails)
+            List<UPSEmployee> genericList = new List<UPSEmployee>();
+
+            UPSEmployee studentObj;
+
+
+            var BaseAddress = new Uri(baseUrl);
+            var url = "public-api/users";
+            string uriToSearch = BaseAddress + url;
+
+            //ApiResult<Student> result = ApiResult<Student>.Get(apiUrl, "/" + Url, token);
+
+
+            using (var Client = new System.Net.Http.HttpClient())
             {
-                
-                employee.name = null;
-                employee.email = null;
-            }
-            
-            var uri = new Uri(string.Format(url, string.Empty));
-            var json = JsonConvert.SerializeObject(userdetails);
-            var contentEnvio = new StringContent(json, Encoding.UTF8, "application/json");
+                //This line
+                Client.DefaultRequestHeaders.Accept.Add(new
+                MediaTypeWithQualityHeaderValue("application/json"));
+                Client.DefaultRequestHeaders.Add("Authorization", "Bearer " + APIKey);
 
-           
-            var response = await client.PostAsync(uri, contentEnvio);
+                HttpResponseMessage response = Client.GetAsync(uriToSearch).Result;
 
-            if (response.IsSuccessStatusCode)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<IList<Datum>>(content);
+                if (response.IsSuccessStatusCode)
+                {
+
+                    var jsonresponse = response.Content.ReadAsStringAsync().Result;
+
+                    var myObject = Newtonsoft.Json.JsonConvert.DeserializeObject<Jsonobjects>(jsonresponse);
+                    for (int i = 0; i <= 19; i++)
+                    {
+                        studentObj = new UPSEmployee
+                        {
+                            id = myObject.data[i].id.ToString(),
+                            name = myObject.data[i].name.ToString(),
+                            email = myObject.data[i].email.ToString(),
+                            status = myObject.data[i].status.ToString(),
+                            //gender = (Gender)Enum.Parse(typeof(Gender), myObject.data[i].gender.ToString()),
+                            gender = myObject.data[i].gender.ToString(),
+                            created_at = Convert.ToDateTime(myObject.data[i].created_at.ToString()),
+                            updated_at = Convert.ToDateTime(myObject.data[i].updated_at.ToString()),
+                            record = myObject.meta.pagination.total.ToString()
+                            
+                        };
+                        genericList.Add(studentObj);
+                    }
+
+                    //Student deserializedName = JsonConvert.DeserializeObject<Student>(jsonresponse);
+                    //genericList.Add(deserializedName);
+                }
+
+                return genericList;
             }
-            return null;
         }
 
         public class Pagination
@@ -110,14 +138,14 @@ namespace UPSCustomerData.DataModels
         //}
 
 
-        public IList<Student> GetRecord(int id)
+        public IList<UPSEmployee> GetRecord(int id)
         {
-            List<Student> genericList = new List<Student>();
+            List<UPSEmployee> genericList = new List<UPSEmployee>();
 
-            Student studentObj;
+            UPSEmployee studentObj;
 
 
-            var BaseAddress = new Uri("https://gorest.co.in/");
+            var BaseAddress = new Uri(baseUrl);
             var url = "public-api/users?page=";
             string uriToSearch = BaseAddress + url;
 
@@ -129,7 +157,7 @@ namespace UPSCustomerData.DataModels
                 //This line
                 Client.DefaultRequestHeaders.Accept.Add(new
                 MediaTypeWithQualityHeaderValue("application/json"));
-                Client.DefaultRequestHeaders.Add("Authorization", "Bearer fa114107311259f5f33e70a5d85de34a2499b4401da069af0b1d835cd5ec0d56");
+                Client.DefaultRequestHeaders.Add("Authorization", "Bearer " + APIKey);
 
                 HttpResponseMessage response = Client.GetAsync(uriToSearch+id).Result;
 
@@ -141,7 +169,7 @@ namespace UPSCustomerData.DataModels
                     var myObject = Newtonsoft.Json.JsonConvert.DeserializeObject<Jsonobjects>(jsonresponse);
                     for (int i = 0; i <= 19; i++)
                     {
-                        studentObj = new Student
+                        studentObj = new UPSEmployee
                         {
                             id = myObject.data[i].id.ToString(),
                             name = myObject.data[i].name.ToString(),
@@ -170,13 +198,13 @@ namespace UPSCustomerData.DataModels
 
 
 
-        public IList<Student> SearUserRecord(string id)
+        public IList<UPSEmployee> SearUserRecord(string id)
         {
-            List<Student> genericList = new List<Student>();
+            List<UPSEmployee> genericList = new List<UPSEmployee>();
 
-            Student studentObj;
+            UPSEmployee studentObj;
 
-            var BaseAddress = new Uri("https://gorest.co.in/");
+            var BaseAddress = new Uri(baseUrl);
             var url = "public-api/users/";
             string uriToSearch = BaseAddress + url;
 
@@ -188,7 +216,7 @@ namespace UPSCustomerData.DataModels
                 //This line
                 Client.DefaultRequestHeaders.Accept.Add(new
                 MediaTypeWithQualityHeaderValue("application/json"));
-                Client.DefaultRequestHeaders.Add("Authorization", "Bearer fa114107311259f5f33e70a5d85de34a2499b4401da069af0b1d835cd5ec0d56");
+                Client.DefaultRequestHeaders.Add("Authorization", "Bearer " + APIKey);
 
                 HttpResponseMessage response = Client.GetAsync(uriToSearch + id).Result;
 
@@ -201,7 +229,7 @@ namespace UPSCustomerData.DataModels
 
                     for (int i = 0; i <= 19; i++)
                     {
-                        studentObj = new Student
+                        studentObj = new UPSEmployee
                         {
                             id = myObject.data[i].id.ToString(),
                             name = myObject.data[i].name.ToString(),
@@ -227,10 +255,10 @@ namespace UPSCustomerData.DataModels
 
         public class Rootobject
         {
-            public List<Student> Student { get; set; }
+            public List<UPSEmployee> Student { get; set; }
         }
 
-        public class Student
+        public class UPSEmployee
         {
             public string id { get; set; }
             public string name { get; set; }
@@ -241,7 +269,7 @@ namespace UPSCustomerData.DataModels
             public DateTime created_at { get; set; }
             public DateTime updated_at { get; set; }
 
-           
+            public string record { get; set; }
         }
 
 
@@ -265,7 +293,7 @@ namespace UPSCustomerData.DataModels
             public int id { get; set; }
             public Meta meta { get; set; }
 
-            public Student[] data { get; set; }
+            public UPSEmployee[] data { get; set; }
 
             //public List<UPSCustomerDetails> data { get; set; }
         }
@@ -299,6 +327,20 @@ namespace UPSCustomerData.DataModels
             public List<UPSCustomerDetails> userdetails { get; set; }
 
             //public static IList<UPSCustomerDetails> products = new List<UPSCustomerDetails>();
+        }
+
+
+        public class Datum
+        {
+            public int id { get; set; }
+            public string name { get; set; }
+            public string email { get; set; }
+            public Gender gender { get; set; }
+            public string status { get; set; }
+            public DateTime created_at { get; set; }
+            public DateTime updated_at { get; set; }
+            //public Person SelectedPerson { get; set; }
+
         }
 
 
@@ -362,6 +404,7 @@ namespace UPSCustomerData.DataModels
             }
         }
 
+
     }
-    
-}
+
+ }

@@ -16,13 +16,14 @@
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="555*"/>
+            <ColumnDefinition Width="456*"/>
+            <ColumnDefinition Width="99*"/>
             <ColumnDefinition Width="350*"/>
         </Grid.ColumnDefinitions>
 
 
 
-        <DataGrid x:Name="grdEmployee" Height="303" Margin="143,105,0,0" VerticalAlignment="Top" Grid.Column="1" ItemsSource="{Binding UPSCustomerDetails}"  SelectedItem="{Binding SelectedDataItem,Mode=TwoWay}"  Grid.ColumnSpan="2">
+        <DataGrid x:Name="grdEmployee" Height="303" Margin="143,105,0,0" VerticalAlignment="Top" Grid.Column="1" ItemsSource="{Binding UPSCustomerDetails}"  SelectedItem="{Binding SelectedDataItem,Mode=TwoWay}"  Grid.ColumnSpan="3">
 
             <DataGrid.Resources>
                 <Style TargetType="{x:Type DataGridColumnHeader}">
@@ -73,7 +74,7 @@
 
         </DataGrid>
 
-        <Grid Margin="146,107,92,21" Grid.Column="1" Grid.ColumnSpan="2">
+        <Grid Margin="146,107,92,21" Grid.Column="1" Grid.ColumnSpan="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="121*"/>
                 <ColumnDefinition Width="278*"/>
@@ -98,16 +99,20 @@
         </Grid>
 
         <TextBox HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Width="34" Margin="143,408,0,0" x:Name="txtSearchID" Grid.Column="1" Height="19" Background="#FFF2F7E7" AutomationProperties.HelpText="Enter ID to delete" Visibility="Hidden" />
-        <Label x:Name="txtLabel" Content="Label" Grid.Column="1" HorizontalAlignment="Left" Height="33" Margin="176,21,0,0" VerticalAlignment="Top" Width="298" FontSize="16" FontWeight="Bold" Background="White"/>
+        <Label x:Name="txtLabel" Content="Label" Grid.Column="1" HorizontalAlignment="Left" Height="33" Margin="176,21,0,0" VerticalAlignment="Top" Width="298" FontSize="16" FontWeight="Bold" Background="White" Grid.ColumnSpan="2"/>
         <Image Grid.Column="1" HorizontalAlignment="Left" Height="74" Margin="27,43,0,0" VerticalAlignment="Top" Width="76"/>
         <Label x:Name="txtLabelUser" Grid.Column="1" HorizontalAlignment="Left" Height="88" Margin="27,136,0,0" VerticalAlignment="Top" Width="93" FontSize="14"/>
-        <TextBox x:Name="txtUnivSearch" Grid.Column="1" HorizontalAlignment="Left" Height="26" Margin="275,70,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="230" TextChanged="txtUnivSearch_TextChanged"/>
-        <Image Margin="10,21,440,350" Source="avatar.png" Stretch="Fill" Grid.Column="1" RenderTransformOrigin="0.432,0.218"/>
-        <Image Grid.Column="1" Margin="141,25,387,427" Source="Ups.ico" Stretch="Fill"/>
-        <Button Content="Next &gt;&gt;" HorizontalAlignment="Left" VerticalAlignment="Top" Width="77" Margin="269,71,0,0" x:Name="btnNext" Click="btnNext_Click" RenderTransformOrigin="-0.913,0.394" Height="29" Background="#FF8F8F8F" Grid.Column="2" />
-        <ComboBox x:Name='NumberOfRecords' SelectedIndex='0' SelectionChanged='NumberOfRecords_SelectionChanged' Grid.Column="2" HorizontalAlignment="Left" Height="29" Margin="163,70,0,0" VerticalAlignment="Top" Width="59"/>
-        <Label Content="Right click to delete an user from the DataTable." Grid.Column="1" HorizontalAlignment="Left" Height="29" Margin="143,422,0,0" VerticalAlignment="Top" Width="362" Background="White" Foreground="Red" FontWeight="Bold"/>
+        <TextBox x:Name="txtUnivSearch" Grid.Column="1" HorizontalAlignment="Left" Height="26" Margin="275,70,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="230" TextChanged="txtUnivSearch_TextChanged" Grid.ColumnSpan="2"/>
+        <Image Margin="10,21,340.882,350" Source="avatar.png" Stretch="Fill" Grid.Column="1" RenderTransformOrigin="0.432,0.218"/>
+        <Image Grid.Column="1" Margin="141,25,287.882,427" Source="Ups.ico" Stretch="Fill"/>
+        <Button Content="Next &gt;&gt;" HorizontalAlignment="Left" VerticalAlignment="Top" Width="77" Margin="269,71,0,0" x:Name="btnNext" Click="btnNext_Click" RenderTransformOrigin="-0.913,0.394" Height="29" Background="#FF8F8F8F" Grid.Column="3" />
+        <ComboBox x:Name='NumberOfRecords' SelectedIndex='0' SelectionChanged='NumberOfRecords_SelectionChanged' Grid.Column="3" HorizontalAlignment="Left" Height="29" Margin="163,70,0,0" VerticalAlignment="Top" Width="59"/>
+        <Label Content="Right click to delete an user from the DataTable." Grid.Column="1" HorizontalAlignment="Left" Height="29" Margin="143,422,0,0" VerticalAlignment="Top" Width="362" Background="White" Foreground="Red" FontWeight="Bold" Grid.ColumnSpan="2"/>
         <Label Content="Search using Name" Grid.Column="1" HorizontalAlignment="Left" Height="29" Margin="141,70,0,0" VerticalAlignment="Top" Width="129"/>
+        <TextBox  x:Name="txtGoToPage" Grid.Column="3" HorizontalAlignment="Left" Height="29" Margin="163,25,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="59" RenderTransformOrigin="0.526,0.024"/>
+        <Button Content="GoTo Page" Grid.Column="3" HorizontalAlignment="Left" Height="29" Margin="269,25,0,0" VerticalAlignment="Top" Width="77" Background="#FFFFFBA1" Click="btnGoTo_Click"/>
+        <Label Content="--->" Grid.Column="3" HorizontalAlignment="Left" Height="29" Margin="229,25,0,0" VerticalAlignment="Top" Width="35" FontWeight="Bold" FontSize="14"/>
+        <Label x:Name="lblPageInfo" Content="" Grid.Column="3" HorizontalAlignment="Left" Height="29" Margin="79,422,0,0" VerticalAlignment="Top" Width="179"/>
 
     </Grid>
 </Window>

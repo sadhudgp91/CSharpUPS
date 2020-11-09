@@ -12,12 +12,15 @@ using System.Windows.Forms;
 using System.ComponentModel;
 using System.Net.Http.Formatting;
 using static UPSCustomerData.MainWindow;
+using System.Configuration;
 
 namespace UPSCustomerData.ControlEngine
 {
     public static class RestAPIFunctions
+
     {
-        public static readonly string baseURL = "https://gorest.co.in/public-api/";
+        public static readonly string baseURL = "https://gorest.co.in/";
+        public static readonly string APIKey = ConfigurationManager.AppSettings["accessTokenAPIKey"];
         public static async Task<string> GetAll()
 
         {
@@ -68,13 +71,13 @@ namespace UPSCustomerData.ControlEngine
 
         public static async Task<string> SearchUser(string id)
         {
-            var BaseAddress = new Uri("https://gorest.co.in/");
+            var BaseAddress = new Uri(baseURL);
             var url = "public-api/users/" + id;
             string uriToSearch = BaseAddress + url;
 
             using (HttpClient client = new HttpClient())
             {
-                client.DefaultRequestHeaders.Add("Authorization", "Bearer fa114107311259f5f33e70a5d85de34a2499b4401da069af0b1d835cd5ec0d56");
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer "+ APIKey);
                 
                 using (HttpResponseMessage response = await client.GetAsync(uriToSearch))
                 {
@@ -101,13 +104,13 @@ namespace UPSCustomerData.ControlEngine
 
         public static async Task<string> GoToPage(string id)
         {
-            var BaseAddress = new Uri("https://gorest.co.in/");
+            var BaseAddress = new Uri(baseURL);
             var url = "public-api/users?page=" + id;
             string uriToSearch = BaseAddress + url;
 
             using (HttpClient client = new HttpClient())
             {
-                client.DefaultRequestHeaders.Add("Authorization", "Bearer fa114107311259f5f33e70a5d85de34a2499b4401da069af0b1d835cd5ec0d56");
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + APIKey);
 
                 using (HttpResponseMessage response = await client.GetAsync(uriToSearch))
                 {
@@ -147,12 +150,13 @@ namespace UPSCustomerData.ControlEngine
             using (HttpClient client = new HttpClient())
      
             {
-                client.DefaultRequestHeaders.Add("Authorization", "Bearer fa114107311259f5f33e70a5d85de34a2499b4401da069af0b1d835cd5ec0d56");
-                using (HttpResponseMessage response = await client.PostAsync(baseURL + "users", encodedItem))
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + APIKey);
+
+                using (HttpResponseMessage response = await client.PostAsync(baseURL + "public-api/users", encodedItem))
                 {
                     if (response.IsSuccessStatusCode)
                     {
-                        System.Windows.MessageBox.Show("Data entered successfully!");
+                        System.Windows.MessageBox.Show("Data entered successfully at last page index 75!","Information", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
                     {
