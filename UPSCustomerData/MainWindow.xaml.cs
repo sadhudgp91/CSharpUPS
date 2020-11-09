@@ -41,6 +41,9 @@ namespace UPSCustomerData
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
+    /// Author: Kaushik Sadhu [Designed and developed for job interview]
+    /// Company: UPS
+    /// Date Updated: 11/09/2020
     /// </summary>
     public partial class MainWindow : Window
     {
@@ -192,9 +195,6 @@ namespace UPSCustomerData
         //    {
         //        //
         //    }
-                    
-                       
-
         //}
 
         private async void Delete_Click(object sender, RoutedEventArgs e)
@@ -221,7 +221,7 @@ namespace UPSCustomerData
             BindEmployeeList();
             if (newJson != null)
             {
-                MessageBox.Show("User Deleted Successfully!");
+                System.Windows.MessageBox.Show("User Deleted!", "Information", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             txtSearchID.Text = "";
             
@@ -251,11 +251,8 @@ namespace UPSCustomerData
                     JToken parseJson = JToken.Parse(response);
                 }
             }
-
-
             
-           
-            txtSearchID.Text = "Enter Search Criteria";
+            //txtSearchID.Text = "Enter Search Criteria";
             //Refresh the table!
             BindEmployeeList();
 
@@ -339,7 +336,7 @@ namespace UPSCustomerData
                     }
                     else
                     {
-                        MessageBox.Show("Error while deleting user! Check Authorization!");
+                        MessageBox.Show("Error while deleting user! Check Authorization!", "Information", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     }
 
                     using (HttpContent content = response.Content)
@@ -465,6 +462,8 @@ namespace UPSCustomerData
 
         // Excel Export Stuff
 
+        // Author: Kaushik Sadhu for UPS
+
         private string WriteDataTable(System.Data.DataTable dataTable)
         {
             string output = "";
@@ -542,7 +541,7 @@ namespace UPSCustomerData
                 }
                 else
                 {
-                    MessageBox.Show("Empty Recordset, no data to Export!", "Info");
+                    MessageBox.Show("Empty Recordset, no data to Export!", "Information", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
 
             }
@@ -551,7 +550,7 @@ namespace UPSCustomerData
         }
                
 
-
+        // CSV file creation
 
         private void createcsvfile(System.Windows.Controls.DataGrid dataGrid, string FilePath)
         {
@@ -610,10 +609,10 @@ namespace UPSCustomerData
             {
                 employeeCollection.Filter = o =>
                 {
-                    Datum p = o as Datum;
-                    if (searchEntry.Name == "txtId")
-                        return (p.id == Convert.ToInt32(filter));
-                    return (p.name.ToUpper().StartsWith(filter.ToUpper()));
+                    Datum datamodel = o as Datum;
+                    if (searchEntry.Name == "id")
+                        return (datamodel.id == Convert.ToInt32(filter));
+                    return (datamodel.name.ToUpper().StartsWith(filter.ToUpper()));
                 };
             }
         }

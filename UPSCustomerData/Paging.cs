@@ -9,11 +9,11 @@ namespace UPSCustomerData
     class Paging
     {
         /// <summary>
-        /// Current Page Index Number
+        /// Paging Class for UPS
         /// </summary>
         public int PageIndex { get; set; }
 
-        DataTable PagedList = new DataTable(); //Initialize a DataTable Locally
+        DataTable PagedList = new DataTable(); 
 
         /// <summary>
         /// Show the next set of Items based on page index
@@ -87,14 +87,15 @@ namespace UPSCustomerData
 
             IList<EmployeeRecords.UPSEmployee> PagedList = new List<EmployeeRecords.UPSEmployee>();
 
-            PagedList = ListToPage.Skip(PageGroup).Take(RecordsPerPage).ToList(); //This is where the Magic Happens. If you have a Specific sort or want to return ONLY a specific set of columns, add it to this LINQ Query.
+            PagedList = ListToPage.Skip(PageGroup).Take(RecordsPerPage).ToList(); // LINQ Query.
 
             DataTable FinalPaging = PagedTable(PagedList);
 
             return FinalPaging;
         }
 
-        //If youre paging say 30,000 rows and you know the processors of the users will be slow you can ASync thread both of these to allow the UI to update after they finish and prevent a hang.
+        //If youre paging say 30,000 rows and you know the processors of the users will be slow you can ASync thread 
+        //both of these to allow the UI to update after they finish and prevent a hang.
 
         /// <summary>
         /// Internal Method: Performs the Work of converting the Passed in list to a DataTable

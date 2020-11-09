@@ -16,6 +16,9 @@ using System.Configuration;
 
 namespace UPSCustomerData.DataModels
 {
+    // Author: Kaushik Sadhu
+    // UPS
+    // Interaction Model for Employee record DB
 
     class EmployeeRecords {
         readonly string APIKey = ConfigurationManager.AppSettings["accessTokenAPIKey"];
@@ -255,7 +258,7 @@ namespace UPSCustomerData.DataModels
 
         public class Rootobject
         {
-            public List<UPSEmployee> Student { get; set; }
+            public List<UPSEmployee> Employee { get; set; }
         }
 
         public class UPSEmployee

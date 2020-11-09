@@ -41,7 +41,7 @@
             </DataGrid.Resources>
 
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding Id}" Header="Id" Width="100" Visibility="Hidden"/>
+                <DataGridTextColumn Binding="{Binding id}" Header="Id" Width="100" Visibility="Hidden"/>
             </DataGrid.Columns>
 
             <DataGrid.ContextMenu>

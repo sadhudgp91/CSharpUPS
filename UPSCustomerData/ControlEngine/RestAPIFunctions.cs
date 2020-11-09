@@ -15,7 +15,10 @@ using static UPSCustomerData.MainWindow;
 using System.Configuration;
 
 namespace UPSCustomerData.ControlEngine
-{
+{   
+    // Author: Kaushik Sadhu
+    // REST Functions
+    
     public static class RestAPIFunctions
 
     {
@@ -156,7 +159,7 @@ namespace UPSCustomerData.ControlEngine
                 {
                     if (response.IsSuccessStatusCode)
                     {
-                        System.Windows.MessageBox.Show("Data entered successfully at last page index 75!","Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                        System.Windows.MessageBox.Show("Data entered successfully at last page index!","Information", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     else
                     {

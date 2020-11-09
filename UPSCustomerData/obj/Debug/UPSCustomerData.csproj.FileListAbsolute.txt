@@ -51,3 +51,4 @@ C:\Users\sadhu\source\repos\UPSCustomerData\UPSCustomerData\obj\Debug\UPSCustome
 C:\Users\sadhu\source\repos\UPSCustomerData\UPSCustomerData\obj\Debug\UPSCustomerData.csproj.CopyComplete
 C:\Users\sadhu\source\repos\UPSCustomerData\UPSCustomerData\obj\Debug\UPSCustomerData.exe
 C:\Users\sadhu\source\repos\UPSCustomerData\UPSCustomerData\obj\Debug\UPSCustomerData.pdb
+C:\Users\sadhu\source\repos\UPSCustomerData\UPSCustomerData\obj\Debug\UPSCustomerData.csprojAssemblyReference.cache
