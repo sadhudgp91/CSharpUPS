@@ -101,8 +101,9 @@ namespace UPSCustomerData.DataModels
                             gender = myObject.data[i].gender.ToString(),
                             created_at = Convert.ToDateTime(myObject.data[i].created_at.ToString()),
                             updated_at = Convert.ToDateTime(myObject.data[i].updated_at.ToString()),
-                            record = myObject.meta.pagination.total.ToString()
-                            
+                            record = myObject.meta.pagination.total.ToString(),
+                            pages = myObject.meta.pagination.pages.ToString()
+
                         };
                         genericList.Add(studentObj);
                     }
@@ -272,6 +273,7 @@ namespace UPSCustomerData.DataModels
             public DateTime created_at { get; set; }
             public DateTime updated_at { get; set; }
 
+            public string pages { get; set; }
             public string record { get; set; }
         }
 

@@ -86,6 +86,8 @@ namespace UPSCustomerData
             txtUnivSearch.Text = "";
 
             lblPageInfo.Content = PageNumberDisplay();
+            txtGoToPage.Text = TotalPagesDisplay();
+
 
         }
 
@@ -273,8 +275,7 @@ namespace UPSCustomerData
 
         private void btnGoTo_Click(object sender, RoutedEventArgs e)
         {
-            GoToPage(txtGoToPage.Text.ToString());
-            txtGoToPage.Text = "";
+            GoToPage(txtGoToPage.Text.ToString());           
         }
 
 
@@ -327,7 +328,21 @@ namespace UPSCustomerData
             //    PagedNumber = myList.Count;
             //}
             return "Showing " + PagedNumber + " of " + myList[0].record + " records"; //This dramatically reduced the number of times I had to write this string statement
+
+           
         }
+
+        public string TotalPagesDisplay()
+        {
+
+            IList<EmployeeRecords.UPSEmployee> myList = employeeRecord.GetDataAll();
+            //System.Data.DataTable firstTable = PagedTable.SetPaging(myList, nRecordsPerPage);         
+
+            return myList[0].pages;
+
+            
+        }
+
 
 
         private async Task<string> DeleteUser(string id)
@@ -445,6 +460,7 @@ namespace UPSCustomerData
             BindEmployeeList();
             SortDataGrid(grdEmployee);
             lblPageInfo.Content = PageNumberDisplay();
+            txtGoToPage.Text = TotalPagesDisplay();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
